@@ -23,7 +23,7 @@
 
         <input
         type="text"
-        className="w-96 h-12 bg-gray-800 rounded border border-gray-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-900 text-base outline-none text-gray-100 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+        className="w-96 h-12 bg-slate-500 rounded border border-slate-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-900 text-base outline-none text-gray-100 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
         placeholder="Enter a Todo..."
         value={heading}
         onChange={(e)=>setHeading(e.target.value)}
@@ -31,7 +31,7 @@
 
         <input
         type="text"
-        className="w-96 h-12 bg-gray-800 rounded border border-gray-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-900 text-base outline-none text-gray-100 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+        className="w-96 h-12 bg-slate-500 rounded border border-slate-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-900 text-base outline-none text-gray-100 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
         placeholder="Enter a Todo..."
         value={input}
         onChange={(e)=>setInput(e.target.value)}

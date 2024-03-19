@@ -21,46 +21,52 @@ function TodoCard() {
     
     {/* todo body */}
     {todos.map((todo) => (
-    <div key={todo.id} className='relative h-60 w-48 bg-zinc-800 rounded-[20px] text-white p-5 overflow-hidden'>
-            <input 
-            className='text-lg text-orange-500 bg-transparent border-b-2 w-full'
-            value={isTodoEditable ? heading : todo.heading}
-            type="text"
-            onChange={(e)=>setHeading(e.target.value)}
-            readOnly={!isTodoEditable}
-            />
-            <div className='text-white text-sm'>{todo.text}</div>
-            
+    <div key={todo.id} className='relative h-60 w-48 bg-zinc-700 rounded-[20px] text-white overflow-hidden'>
 
-    {/* footer menu */}
-    <div className='absolute bottom-0 left-0 bg-gray-500 w-full h-8 flex items-center justify-between p-5 gap-2 text-black'>
-        <button
-            onClick={() => {
+        {/* head */}
+        <div className='w-full h-4/5 border-b-2 p-5'>
+            <input 
+                className='text-lg text-orange-500 bg-transparent border-b-2 w-full'
+                value={isTodoEditable ? heading : todo.heading}
+                type="text"
+                onChange={(e)=>setHeading(e.target.value)}
+                readOnly={!isTodoEditable}
+            />
+
+            <div className='text-white text-sm'>{todo.text}</div>
+        </div>
                 
 
-                if (isTodoEditable) {
-                    dispatch(editTodo({id:todo.id, heading:heading}));
-                    setIsTodoEditable(false)
+        {/* footer menu */}
+        <div className='absolute bottom-0 left-0 bg-slate-500 w-full h-1/5 flex items-center justify-between p-5 gap-2 text-black'>
+            <button
+                type="submit"
+                onClick={() => {
+                    
 
-                } else setIsTodoEditable((prev) => !prev);
-            }}
+                    if (isTodoEditable) {
+                        dispatch(editTodo({id:todo.id, heading:heading}));
+                        setIsTodoEditable(false)
 
-            // disabled={todo.editable}
-            >{isTodoEditable ? "📁" : "✏️"}</button>
+                    } else setIsTodoEditable((prev) => !prev);
+                }}
 
-        <div className='text-black text-xs'>{todo.dateCreated}</div>
+                // disabled={todo.editable}
+                >{isTodoEditable ? "📁" : "✏️"}</button>
 
+            <div className='text-black text-xs'>{todo.dateCreated}</div>
+
+            
+                
+                {/* Delete Todo Button */}
+            <button
+                className="inline-flex w-8 h-8  text-sms justify-between items-center"
+                onClick={() => dispatch(removeTodo(todo.id))}
+            >
+                ❌
+            </button>
         
-             
-            {/* Delete Todo Button */}
-          <button
-              className="inline-flex w-8 h-8  text-sms justify-between items-center"
-              onClick={() => dispatch(removeTodo(todo.id))}
-          >
-              ❌
-          </button>
-    
-    </div>
+        </div>
     
     </div>
     ))}

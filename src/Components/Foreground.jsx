@@ -6,9 +6,9 @@ function Foreground() {
 
   return (
     <>
-        <div className='top-0 left-0 w-full h-full z-[3]'>
+        <div className='top-0 left-0 w-full h-screen z-[3] bg-orange-100'>
 
-            <div className='w-full bg-slate-500 py-10 text-zinc-900 font-semibold flex justify-center'>
+            <div className='w-full py-10 text-zinc-900 font-semibold flex justify-center'>
                 <CreateNotes />
             </div>
 
