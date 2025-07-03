@@ -1,10 +1,10 @@
-export default function Button({ OnAddClick }) {
+export default function Button({ OnAddClick, content, className }) {
   return (
     <button 
-        className="text-3xl"
         onClick={()=> OnAddClick(true)}
+        className={`${className}`}
     >
-        +
+        {content}
     </button>
   )
 }

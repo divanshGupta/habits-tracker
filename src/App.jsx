@@ -7,11 +7,16 @@ import MobileFooter from './Components/Mobile/MobileFooter';
 import HabitCards from './Components/HabitCards';
 import { startOfWeek, format, addDays } from 'date-fns';
 import Header from './Components/header';
+import { timeFrame } from './App/defaultHabits';
+import Button from './Components/Button/Button';
+import MonthyData from './Components/DataRange/MonthyData';
 
 const weekdays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-const timeFrame = ['Weely', 'Monthly', 'Yearly', 'All Time'];
+
 
 function App() {
+
+  const [chartType, setChartType] = useState("Weekly");
 
   const [habits, setHabits] = useState(() => {
     const saved = localStorage.getItem('habitList');
@@ -31,6 +36,11 @@ function App() {
   const currentMonth = format(new Date(), 'MMMM');
   const currentDay = format(new Date(), 'd');
 
+  {/* time frame for dashboard */}
+  const toggleChartType = () => {
+    setChartType((prev) => (prev === "Weekly" ? "Monthly" : "Weekly"));
+  };
+
   const toggleHabit = (habitId, day) => {
     const updated = { ...data };
     updated[day] = updated[day] || {};
@@ -46,7 +56,7 @@ function App() {
   };
 
   return (
-    <div className="p-4 max-w-6xl mx-auto">
+    <div className="w-full mx-auto">
       <MobileHeader
               OnAddClick={()=>setShowAdd(true)}
               today={today}
@@ -74,18 +84,51 @@ function App() {
       />
 
       {/* main content body (habits list and dashboard) */}
-      <div className='w-full h-full flex justify-center md:gap-4'>
+
+      <div className='w-full h-full flex justify-center'>
 
         {/* dashboard */}
         <div className='hidden md:block w-2/3 border border-gray-300 rounded-lg'>
-          <div className='w-full bg-blue-200'>
-            {timeFrame.map((id, time)=>{
-              <div key={id}>{time}</div>
-            })}
+          {/* time frame buttons */}
+          <div className='w-full bg-blue-200 flex justify-between p-2'>
+            <div className='flex gap-4'>
+            {timeFrame.map((time)=>(
+              <Button
+              className={`px-4 py-2 border border-gray-400 rounded-full
+              bg-gray-400 hover:bg-gray-500`}
+              key={time.id}
+              content={time.label}
+              />
+            ))}
+            </div>
+            <Button
+            className={`px-4 py-2 border border-gray-400 rounded-full
+              bg-gray-400 hover:bg-gray-500`}
+            OnAddClick={()=>setShowAdd(true)}
+            content="+ Add a habit"
+            />
           </div>
 
           {/* date switcher */}
-          <div className='w-full bg-red-200'>date toggler</div>
+          <div className='w-full bg-red-200 flex gap-4 p-2 justify-start items-center'>
+            <div className='p-2 flex items-center justify-center w-8 h-8 rounded-full bg-gray-400 hover:bg-gray-500 border'>{"<"}</div>
+            <div className='p-2 w-8 h-8 flex items-center justify-center rounded-full bg-gray-400 hover:bg-gray-500 border-black'>{">"}</div>
+            <h3 className='text-lg'>Mon 7, July - Sun 13, July</h3>
+
+            {/* data  chart visualisation toggle */}
+            <div className="">
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="sr-only peer"
+                  checked={chartType === "Monthly"}
+                  onChange={toggleChartType}
+                />
+                <div className="w-12 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-600 peer-checked:bg-blue-600 transition-colors duration-200"></div>
+                <div className="absolute w-5 h-5 bg-white rounded-full shadow-md transform peer-checked:translate-x-full transition duration-200"></div>
+              </label>
+            </div>
+          </div>
 
           {/* progress bar */}
           <div className='w-full bg-green-200'>
@@ -95,12 +138,15 @@ function App() {
 
           {/* data board */}
           <div className='w-full'>
+            {chartType=== "Weekly" ? 
             <HabitGrid
             habits={habits}
             data={data}
             days={days}
             toggleHabit={toggleHabit}
             />
+            :
+            <MonthyData />}
           </div>
         </div>
 

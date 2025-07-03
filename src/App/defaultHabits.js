@@ -6,3 +6,10 @@ export const defaultHabits = [
   { id: 5, label: "No screen 30 min before bed", key: "noscreen" },
   { id: 6, label: "Read or journaled", key: "read" },
 ];
+
+export const timeFrame = [
+  {id: 1, label: "Weekly"},
+  {id: 2, label: "Monthly"},
+  {id: 3, label: "Yearly"},
+  {id: 4, label: "All Time"},
+]

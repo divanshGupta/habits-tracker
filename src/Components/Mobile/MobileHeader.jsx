@@ -11,7 +11,12 @@ export default function MobileHeader({ OnAddClick, today }) {
 
       <div className="rounded-full bg-slate-500 h-10 w-10 flex
       items-center justify-center">
-        <Button OnAddClick={OnAddClick}/>
+        <Button 
+        OnAddClick={OnAddClick}
+        content={"+"}
+        className={`w-10 h-10 rounded-full p-2 border border-gray-300
+           hover:bg-gray-400`}
+        />
       </div>
 
       
