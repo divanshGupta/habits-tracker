@@ -24,8 +24,12 @@ export default function AddHabitModal({ onClose, onSubmit, weekdays }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50">
-      <div className="bg-white p-6 rounded shadow-md w-full max-w-md">
+    <div 
+    onClick={onClose}
+    className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50">
+      <div 
+      onClick={(e)=> e.stopPropagation()}
+      className="bg-white p-6 rounded shadow-md w-full max-w-md">
         <h2 className="text-xl font-semibold mb-4">Add New Habit</h2>
 
         <label className="block mb-2">Habit Name</label>
