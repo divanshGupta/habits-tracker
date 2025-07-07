@@ -1,18 +1,13 @@
-import { useState } from "react";
-import SleepCountdown from "../Features/SleepCountdown";
-
-export default function Header({ today, day, month }) {
-  const [sleepTime, setSleepTime] = useState("23:00");
+export default function Header() {
   return (
-    <div className='hidden md:flex bg-yellow-100 w-full items-center justify-between'>
-      <div className=''>
-        <h3 className="text-4xl">Good Morning, Divyansh</h3>
-        <SleepCountdown sleepTime={sleepTime}/>
+    <div className="hidden w-full md:flex items-center justify-between px-40 py-6
+    bg-blue-400">
+      <div className="">
+        <h1 className="text-4xl">weekly.</h1>
       </div>
 
-      <div className="">
-        <h3 className="text-4xl">{`${month}, ${day}`}</h3>
-        <h6 className="text-lg">25% of daily goals achieved</h6>
+      <div>
+        <div className="rounded-full w-10 h-10 bg-gray-500"></div>
       </div>
     </div>
   )

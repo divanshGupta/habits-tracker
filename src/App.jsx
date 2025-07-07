@@ -1,6 +1,6 @@
 import './index.css';
 import { useState, useEffect } from 'react';
-import HabitGrid from './components/HabitGrid';
+import HabitGrid from './Components/DataRange/HabitGrid';
 import AddHabitModal from './Components/AddHabitModal';
 import MobileHeader from './Components/Mobile/MobileHeader';
 import MobileFooter from './Components/Mobile/MobileFooter';
@@ -10,6 +10,13 @@ import Header from './Components/header';
 import { timeFrame } from './App/defaultHabits';
 import Button from './Components/Button/Button';
 import MonthyData from './Components/DataRange/MonthyData';
+import SleepCountdown from './Features/SleepCountdown';
+import {
+  getHabits,
+  addHabit,
+  deleteHabit,
+  updateHabit,
+} from './Utils/dataService';
 
 const weekdays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
@@ -17,16 +24,25 @@ const weekdays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 function App() {
 
   const [chartType, setChartType] = useState("Weekly");
+  const [sleepTime, setSleepTime] = useState("23:00");
 
-  const [habits, setHabits] = useState(() => {
-    const saved = localStorage.getItem('habitList');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [habits, setHabits] = useState([]);
+
+  useEffect(() => {
+    setHabits(getHabits());
+  }, []);
+
+  function handleDeleteHabit(id) {
+    const updated = deleteHabit(id);
+    setHabits(updated);
+  }
 
   const [data, setData] = useState(() => {
     const saved = localStorage.getItem('habitData');
     return saved ? JSON.parse(saved) : {};
   });
+
+  
 
   const [showAdd, setShowAdd] = useState(false);
 
@@ -56,7 +72,7 @@ function App() {
   };
 
   return (
-    <div className="w-full mx-auto">
+    <div className="w-full">
       <MobileHeader
               OnAddClick={()=>setShowAdd(true)}
               today={today}
@@ -77,20 +93,30 @@ function App() {
         Add Habit
       </button> */}
 
-      <Header 
-      today={today}
-      day={currentDay}
-      month={currentMonth}
-      />
+      <Header />
 
       {/* main content body (habits list and dashboard) */}
 
-      <div className='w-full h-full flex justify-center'>
+      <div className='w-full flex justify-center md:px-40'>
 
         {/* dashboard */}
         <div className='hidden md:block w-2/3 border border-gray-300 rounded-lg'>
+
+          {/* welcome message */}
+          <div className='flex w-full items-center justify-between'>
+            <div className='py-4'>
+              <h3 className="font-semibold text-4xl">Good Morning, Divyansh</h3>
+              <SleepCountdown className={`text-lg text-gray-700`} sleepTime={sleepTime}/>
+            </div>
+
+            {/* <div className="">
+              <h3 className="font-semibold text-4xl">{`${currentMonth}, ${currentDay}`}</h3>
+              <h6 className="text-lg text-gray-700">25% of daily goals achieved</h6>
+            </div> */}
+          </div>
+
           {/* time frame buttons */}
-          <div className='w-full bg-blue-200 flex justify-between p-2'>
+          <div className='w-full h-[60px] bg-blue-200 flex justify-between p-2'>
             <div className='flex gap-4'>
             {timeFrame.map((time)=>(
               <Button
@@ -110,13 +136,13 @@ function App() {
           </div>
 
           {/* date switcher */}
-          <div className='w-full bg-red-200 flex gap-4 p-2 justify-start items-center'>
+          <div className='w-full h-[60px] bg-red-200 flex gap-4 p-2 justify-start items-center'>
             <div className='p-2 flex items-center justify-center w-8 h-8 rounded-full bg-gray-400 hover:bg-gray-500 border'>{"<"}</div>
             <div className='p-2 w-8 h-8 flex items-center justify-center rounded-full bg-gray-400 hover:bg-gray-500 border-black'>{">"}</div>
             <h3 className='text-lg'>Mon 7, July - Sun 13, July</h3>
 
             {/* data  chart visualisation toggle */}
-            <div className="">
+            <div className="w-full h-[60px]">
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
                   type="checkbox"
@@ -131,13 +157,13 @@ function App() {
           </div>
 
           {/* progress bar */}
-          <div className='w-full bg-green-200'>
+          <div className='w-full h-[60px] bg-green-200'>
             <div className='w-full py-2 bg-blue-600 border-2 rounded-3xl'></div>
             <p>50% of doing goals achieved</p>
           </div>
 
           {/* data board */}
-          <div className='w-full'>
+          <div className='w-full h-[420px]'>
             {chartType=== "Weekly" ? 
             <HabitGrid
             habits={habits}
@@ -151,11 +177,19 @@ function App() {
         </div>
 
         {/* habits cards */}
-        <div className='w-full border bg-pink-200 border-gray-300 px-2 py-2 md:w-1/3 rounded-lg'>
+        
+        {habits.length > 0 ? (
           <HabitCards 
           habits={habits}
+          today={today}
+          day={currentDay}
+          month={currentMonth}
+          handleDelete={handleDeleteHabit}
           />
-        </div>
+        ) : (
+          <p>no habits to show.</p>
+        )}
+        
       </div>
 
       {/* navigational menu as footer */}

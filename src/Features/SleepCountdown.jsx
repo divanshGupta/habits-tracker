@@ -23,7 +23,7 @@ function getTimeLeftToSleep (sleepTime) {
     return `${hours} hrs ${minutes} mins`;
 }
 
-export default function SleepCountdown({ sleepTime }) {
+export default function SleepCountdown({ sleepTime, className= "" }) {
     const [timeLeft, setTimeLeft] = useState(()=> getTimeLeftToSleep(sleepTime));
 
     useEffect(()=> {
@@ -36,8 +36,8 @@ export default function SleepCountdown({ sleepTime }) {
     }, [sleepTime]);
 
   return (
-    <div className="text-blue-700 font-medium mt-2">
-        <h6>{timeLeft} till bedtime</h6>
+    <div className="">
+        <h6 className={className}>{timeLeft} till bedtime</h6>
     </div>
   )
 }

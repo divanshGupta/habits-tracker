@@ -2,11 +2,13 @@ import { format } from 'date-fns';
 
 export default function HabitGrid({ habits, data, days, toggleHabit }) {
   return (
-    <>
+    <div className='h-full grid auto-rows-fr'>
       <div className="grid grid-cols-8 gap-2 text-center font-semibold">
-        <div className="text-left">Habit</div>
+        <div className="text-left my-2">Habit</div>
         {days.map(day => (
-          <div key={day}>{format(new Date(day), 'EEE')}</div>
+          <div 
+          className='my-2'
+          key={day}>{format(new Date(day), 'EEE')}</div>
         ))}
       </div>
 
@@ -30,6 +32,6 @@ export default function HabitGrid({ habits, data, days, toggleHabit }) {
           ))}
         </div>
       ))}
-    </>
+    </div>
   );
 }
