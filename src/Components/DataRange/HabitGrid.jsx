@@ -1,8 +1,8 @@
 import { format } from 'date-fns';
 
-export default function HabitGrid({ habits, data, days, toggleHabit }) {
+export default function HabitGrid({ habits, days, toggleHabit }) {
   return (
-    <div className='h-full grid auto-rows-fr'>
+    <div className='h-full grid'>
       <div className="grid grid-cols-8 gap-2 text-center font-semibold">
         <div className="text-left my-2">Habit</div>
         {days.map(day => (
@@ -22,7 +22,7 @@ export default function HabitGrid({ habits, data, days, toggleHabit }) {
             <div
               key={day}
               className={`w-6 h-6 mx-auto rounded-full cursor-pointer border ${
-                data[day]?.[habit.id] ? habit.color : 'border-gray-300'
+                habit.records?.[day] ? habit.color : 'border-gray-300'
               } ${habit.inactive.includes(format(new Date(day), 'EEEE')) ? 'opacity-30 cursor-not-allowed' : ''}`}
               onClick={() => {
                 if (!habit.inactive.includes(format(new Date(day), 'EEEE')))

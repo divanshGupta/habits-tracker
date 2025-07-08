@@ -2,40 +2,47 @@ import debounce from 'lodash.debounce';
 
 const HABITS_KEY = 'habit_data_v1';
 
-// Get habits from localStorage
+/**
+ * Get all habits from localStorage
+ * Used only on app load to hydrate initial state
+ */
 export function getHabits() {
-  const raw = localStorage.getItem(HABITS_KEY);
-  return raw ? JSON.parse(raw) : [];
+  const data = localStorage.getItem(HABITS_KEY);
+  return data ? JSON.parse(data) : [];
 }
 
-// Immediate save
+/**
+ * Save habits to localStorage immediately
+ * (used internally by debounced and manual saves)
+ */
 function _saveHabits(habits) {
   localStorage.setItem(HABITS_KEY, JSON.stringify(habits));
 }
 
-// Debounced save function (delay: 500ms)
+/**
+ * Debounced save to localStorage
+ * Helps reduce rapid writes when toggling checkboxes, etc.
+ */
 export const saveHabits = debounce(_saveHabits, 500);
 
-// Add new habit
-export function addHabit(habit) {
-  const habits = getHabits();
-  habits.push(habit);
-  saveHabits(habits);
-  return habits;
+/**
+ * Add a habit to current list
+ * Returns new habit object (you must add to state manually)
+ */
+export function createHabit(habit) {
+  const newHabit = {
+    id: crypto.randomUUID(),
+    title: habit.title || "Untitled Habit",
+    records: {}, // start with empty records
+    ...habit,    // spread any additional props (e.g., color, type)
+  };
+  return newHabit;
 }
 
-// Delete habit by ID
-export function deleteHabit(id) {
-  const habits = getHabits().filter(h => h.id !== id);
-  saveHabits(habits);
-  return habits;
-}
-
-// Update habit by ID
-export function updateHabit(updatedHabit) {
-  const habits = getHabits().map(habit =>
-    habit.id === updatedHabit.id ? updatedHabit : habit
-  );
-  saveHabits(habits);
-  return habits;
+/**
+ * Save all habits to localStorage manually (sync version)
+ * Use this after setHabits to persist updated array
+ */
+export function persistHabits(habits) {
+  _saveHabits(habits);
 }
