@@ -16,7 +16,7 @@ export default function HabitGrid({ habits, days, toggleHabit }) {
         <div key={habit.id} className="grid grid-cols-8 gap-2 items-center my-2">
           <div className="text-left flex items-center">
             <div className={`w-3 h-3 rounded-full mr-2 ${habit.color}`}></div>
-            {habit.name}
+            {habit.title}
           </div>
           {days.map(day => (
             <div

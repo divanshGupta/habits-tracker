@@ -15,7 +15,7 @@ export default function AddHabitModal({ isOpen, onCancel, onSubmit, weekdays }) 
     if (!name.trim()) return;
     const newHabit = {
       id: Date.now(),
-      name,
+      title: name,
       days,
       color: 'bg-blue-500',
       inactive: weekdays.map((_, i) => i).filter(i => !days.includes(i)),

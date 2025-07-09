@@ -1,5 +1,4 @@
-import { CgProfile } from "react-icons/cg";
-import SettingsMenu from "./Menu/SettingsMenu";
+import SettingsMenu from "./Menu/ProfileMenu";
 
 export default function Header() {
   return (
