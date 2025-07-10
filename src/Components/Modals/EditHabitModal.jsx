@@ -1,73 +1,111 @@
+// src/components/EditHabitModal.jsx (or AddHabitModal.jsx)
 import { Dialog, Transition } from "@headlessui/react";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { closeEditModal } from "../../Features/uiSlice";
+import { editHabit } from "../../Features/habitsSlice";
 
-export default function EditHabitModal({ isOpen, onCancel, onSave, habit }) {
-  const [title, setTitle] = useState(habit?.title || "");
+const weekdaysList = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
+export default function EditHabitModal() {
+  const dispatch = useDispatch();
+  const isOpen = useSelector(state => state.ui.isEditHabitModalOpen);
+  const editHabitId = useSelector(state => state.ui.editHabitId);
+  const habits = useSelector(state => state.habits);
+
+  const habitToEdit = habits.find(h => h.id === editHabitId);
+
+  const [title, setTitle] = useState("");
+  const [frequency, setFrequency] = useState([]);
+  const [type, setType] = useState("todo");
+
+  // Populate form when editing
   useEffect(() => {
-    setTitle(habit?.title || "");
-  }, [habit]);
+    if (habitToEdit) {
+      setTitle(habitToEdit.title);
+      setFrequency(habitToEdit.frequency);
+      setType(habitToEdit.type);
+    }
+  }, [habitToEdit]);
+
+  const handleFrequencyChange = (day) => {
+    setFrequency(prev =>
+      prev.includes(day)
+        ? prev.filter(d => d !== day)
+        : [...prev, day]
+    );
+  };
 
   const handleSubmit = () => {
-    if (!title.trim()) return;
-    onSave(habit.id, title.trim());
-    onCancel();
+    if (!title || frequency.length === 0) return;
+
+    dispatch(editHabit({
+      id: editHabitId,
+      title,
+      frequency,
+      type
+    }));
+
+    dispatch(closeEditModal());
   };
+
+  if (!isOpen) return null;
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-50" onClose={onCancel}>
-        {/* Backdrop */}
-        <Transition.Child
-          as={Fragment}
-          enter="ease-out duration-200"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="ease-in duration-150"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm" />
-        </Transition.Child>
-
-        {/* Panel */}
-        <div className="fixed inset-0 overflow-y-auto flex items-center justify-center px-4">
-          <Transition.Child
-            as={Fragment}
-            enter="ease-out duration-200"
-            enterFrom="opacity-0 scale-90"
-            enterTo="opacity-100 scale-100"
-            leave="ease-in duration-150"
-            leaveFrom="opacity-100 scale-100"
-            leaveTo="opacity-0 scale-90"
-          >
-            <Dialog.Panel className="w-full max-w-md bg-white border border-black rounded-lg p-6 shadow-xl">
-              <Dialog.Title className="text-xl font-semibold mb-4">Edit Habit</Dialog.Title>
+      <Dialog as="div" className="relative z-10" onClose={() => dispatch(closeEditModal())}>
+        <div className="fixed inset-0 bg-black bg-opacity-25" />
+        <div className="fixed inset-0 overflow-y-auto">
+          <div className="flex items-center justify-center min-h-full">
+            <Dialog.Panel className="w-full max-w-md p-6 bg-white rounded-xl">
+              <Dialog.Title className="text-lg font-bold mb-4">
+                {editHabitId ? "Edit Habit" : "Add New Habit"}
+              </Dialog.Title>
 
               <input
-                className="w-full border border-gray-300 rounded px-4 py-2 mb-6 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 type="text"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Enter new habit title"
+                onChange={e => setTitle(e.target.value)}
+                placeholder="Habit Name"
+                className="w-full p-2 border rounded mb-4"
               />
 
-              <div className="flex flex-col sm:flex-row gap-4 justify-end">
-                <button
-                  onClick={onCancel}
-                  className="w-full sm:w-auto px-4 py-2 rounded-full border border-gray-400 bg-gray-200 hover:bg-gray-300"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleSubmit}
-                  className="w-full sm:w-auto px-4 py-2 rounded-full bg-blue-600 text-white hover:bg-blue-700"
-                >
-                  Save Changes
+              <div className="mb-4">
+                <p className="font-semibold">Frequency:</p>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {weekdaysList.map(day => (
+                    <label key={day} className="flex items-center gap-1">
+                      <input
+                        type="checkbox"
+                        checked={frequency.includes(day)}
+                        onChange={() => handleFrequencyChange(day)}
+                      />
+                      {day}
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <p className="font-semibold">Type:</p>
+                <label className="mr-4">
+                  <input type="radio" value="todo" checked={type === "todo"} onChange={() => setType("todo")} />
+                  To-Do
+                </label>
+                <label>
+                  <input type="radio" value="notodo" checked={type === "notodo"} onChange={() => setType("notodo")} />
+                  Not-To-Do
+                </label>
+              </div>
+
+              <div className="flex justify-end gap-3">
+                <button onClick={() => dispatch(closeEditModal())} className="px-4 py-2 border rounded">Cancel</button>
+                <button onClick={handleSubmit} className="px-4 py-2 bg-blue-600 text-white rounded">
+                  {editHabitId ? "Update" : "Save"}
                 </button>
               </div>
             </Dialog.Panel>
-          </Transition.Child>
+          </div>
         </div>
       </Dialog>
     </Transition>

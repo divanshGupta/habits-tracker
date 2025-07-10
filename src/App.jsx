@@ -1,11 +1,6 @@
 import './index.css';
 import { useState, useEffect } from 'react';
 import { startOfWeek, format, addDays } from 'date-fns';
-import {
-  getHabits,
-  createHabit,
-  persistHabits,
-} from './Utils/dataService';
 import Header from './Components/header';
 import Button from './Components/Button/Button';
 import HabitGrid from './Components/DataRange/HabitGrid';
@@ -18,6 +13,12 @@ import HabitCards from './Components/HabitCards';
 import MobileHeader from './Components/Mobile/MobileHeader';
 import MobileFooter from './Components/Mobile/MobileFooter';
 import { timeFrame } from './App/defaultHabits';
+import { useDispatch, useSelector } from 'react-redux';
+import { openAddModal } from "./Features/uiSlice";
+import { getHabits } from './Utils/dataService';
+import { setHabits } from "./Features/habitsSlice";
+import { saveHabits, toPlainHabits } from './Utils/dataService';
+import Greeting from './Components/MircroFeatures/Greeting';
 
 const weekdays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
@@ -25,73 +26,28 @@ function App() {
   // State
   const [chartType, setChartType] = useState("Weekly");
   const [sleepTime, setSleepTime] = useState("23:00");
-  const [habits, setHabits] = useState([]);
-  const [showAdd, setShowAdd] = useState(false);
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [habitToEdit, setHabitToEdit] = useState(null);
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const [habitToDelete, setHabitToDelete] = useState(null);
 
-  // Load habits on mount
-useEffect(() => {
-  setHabits(getHabits());
-}, []);
+  const dispatch = useDispatch();
+  const isOpen = useSelector(state => state.ui.isAddHabitModelOpen);
 
-  // Handle Add
-  const handleAddHabit = (habitInput) => {
-    const newHabit = createHabit(habitInput);
-    const updated = [...habits, newHabit];
-    setHabits(updated);
-    persistHabits(updated);
-  };
+  const habits = useSelector(state => state.habits) || [];
+ // adjust if slice is named differently
 
-  // Handle Edit
-  const handleUpdateHabitTitle = (id, newTitle) => {
-    const updated = habits.map(h =>
-      h.id === id ? { ...h, title: newTitle } : h
-    );
-    setHabits(updated);
-    persistHabits(updated);
-  };
-
-  // Handle Delete
-  const confirmDelete = () => {
-    const updated = habits.filter(h => h.id !== habitToDelete.id);
-    setHabits(updated);
-    persistHabits(updated);
-    setIsDeleteOpen(false);
-  };
-
-  // Modals
-  const openEditModal = (habit) => {
-    setHabitToEdit(habit);
-    setEditModalOpen(true);
-  };
-
-  const openDeleteModal = (habit) => {
-    setHabitToDelete(habit);
-    setIsDeleteOpen(true);
-  };
+  useEffect(() => {
+    if (habits.length > 0) {
+      saveHabits(toPlainHabits(habits));
+    }
+  }, [habits]);
 
   // Chart toggle
   const toggleChartType = () => {
     setChartType(prev => (prev === "Weekly" ? "Monthly" : "Weekly"));
   };
 
-  // Toggle habit record
-  const toggleHabit = (habitId, dayKey) => {
-    const updated = habits.map(habit => {
-      if (habit.id !== habitId) return habit;
-      const updatedRecords = {
-        ...habit.records,
-        [dayKey]: !habit.records?.[dayKey]
-      };
-      return { ...habit, records: updatedRecords };
-    });
-
-    setHabits(updated);
-    persistHabits(updated);
-  };
+  useEffect(() => {
+  const storedHabits = getHabits(); // ✅ Is this returning correct data?
+  dispatch(setHabits(storedHabits));
+  }, []);
 
   // Date info
   const startDate = startOfWeek(new Date(), { weekStartsOn: 1 });
@@ -105,20 +61,13 @@ useEffect(() => {
 
   return (
     <div className="w-full md:flex flex-col gap-10">
+      {/* header for mobile */}
       <MobileHeader
-        OnAddClick={() => setShowAdd(true)}
         today={todayLong}
       />
+      <AddHabitModal />
 
-      {showAdd && (
-        <AddHabitModal
-          isOpen={showAdd}
-          weekdays={weekdays}
-          onCancel={() => setShowAdd(false)}
-          onSubmit={handleAddHabit}
-        />
-      )}
-
+      {/* header for desktop */}
       <Header />
 
       {/* Main Body */}
@@ -126,7 +75,9 @@ useEffect(() => {
         {/* Dashboard */}
         <div className='hidden md:block w-2/3'>
           <div className='flex-col w-full items-center justify-between px-2 py-8'>
-            <h3 className="font-normal font-nunito text-5xl">Good Morning, Divyansh</h3>
+            <h3 className="font-normal font-nunito text-5xl">
+              <Greeting userName={"Divyansh"} />
+            </h3>
             <SleepCountdown className={`text-lg text-gray-700`} sleepTime={sleepTime} />
           </div>
 
@@ -142,8 +93,8 @@ useEffect(() => {
               ))}
             </div>
             <Button
+              onClick={() => dispatch(openAddModal())}
               content="+ Add a habit"
-              OnAddClick={() => setShowAdd(true)}
               className="px-4 py-2 border border-gray-400 rounded-full bg-gray-400 hover:bg-gray-500"
             />
           </div>
@@ -178,11 +129,11 @@ useEffect(() => {
 
           {/* Chart */}
           <div className='w-full p-2'>
-            {chartType === "Weekly" ? (
+            {chartType === "Monthly" ? (
               <HabitGrid
-                habits={habits}
-                days={days}
-                toggleHabit={toggleHabit}
+                // habits={habits}
+                // days={days}
+                // toggleHabit={toggleHabit}
               />
             ) : (
               <MonthyData />
@@ -192,36 +143,20 @@ useEffect(() => {
 
         {/* Habit Cards */}
         <HabitCards
-          habits={habits}
-          today={today}
           day={currentDay}
           month={currentMonth}
-          handleDelete={openDeleteModal}
-          handleEdit={openEditModal}
-          onAddClick={() => setShowAdd(true)}
         />
 
         {/* Modals */}
-        <DeleteHabitModal
-          isOpen={isDeleteOpen}
-          onCancel={() => setIsDeleteOpen(false)}
-          onConfirm={confirmDelete}
-          habitName={habitToDelete?.title || "Habit"}
-        />
+        <DeleteHabitModal />
 
         <EditHabitModal
-          isOpen={editModalOpen}
-          onCancel={() => setEditModalOpen(false)}
-          onSave={handleUpdateHabitTitle}
-          habit={habitToEdit}
           weekdays={weekdays}
         />
       </div>
 
       {/* Mobile Nav */}
-      <MobileFooter 
-      OnAddClick={() => setShowAdd(true)}
-      />
+      <MobileFooter />
     </div>
   );
 }

@@ -1,11 +1,28 @@
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
+import { useDispatch, useSelector } from "react-redux";
+import { deleteHabit } from "../../Features/habitsSlice";
+import { closeDeleteModal } from "../../Features/uiSlice";
 
-export default function DeleteHabitModal({ isOpen, onCancel, onConfirm, habitName }) {
+export default function DeleteHabitModal() {
+  const dispatch = useDispatch();
+  const isOpen = useSelector(state => state.ui.isDeleteModalOpen);
+  const habitId = useSelector(state => state.ui.habitIdToDelete);
+  const habit = useSelector(state =>
+    state.habits.find(h => h.id === habitId)
+  );
+
+  if (!habit) return null;
+
+  const handleDelete = () => {
+    dispatch(deleteHabit(habit.id));
+    dispatch(closeDeleteModal());
+  };
+
   return (
     <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-50" onClose={onCancel}>
+      <Dialog as="div" className="relative z-50" onClose={() => dispatch(closeDeleteModal())}>
         {/* Backdrop */}
         <Transition.Child
           as={Fragment}
@@ -19,7 +36,7 @@ export default function DeleteHabitModal({ isOpen, onCancel, onConfirm, habitNam
           <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm" />
         </Transition.Child>
 
-        {/* Centered Panel */}
+        {/* Panel */}
         <div className="fixed inset-0 overflow-y-auto flex items-center justify-center px-4">
           <Transition.Child
             as={Fragment}
@@ -45,22 +62,22 @@ export default function DeleteHabitModal({ isOpen, onCancel, onConfirm, habitNam
 
               {/* Habit Name */}
               <div className="mt-6 w-full px-6 py-3 border border-gray-300 rounded text-lg text-center">
-                {habitName}
+                {habit.title}
               </div>
 
               {/* Buttons */}
               <div className="flex flex-col sm:flex-row w-full justify-between gap-4 mt-6">
                 <button
                   className="w-full sm:w-1/2 rounded-full px-4 py-2 bg-gray-200 border border-gray-400 hover:bg-gray-300 transition"
-                  onClick={onCancel}
+                  onClick={() => dispatch(closeDeleteModal())}
                 >
                   Cancel
                 </button>
                 <button
                   className="w-full sm:w-1/2 bg-red-500 text-white rounded-full px-4 py-2 hover:bg-red-600 transition"
-                  onClick={onConfirm}
+                  onClick={handleDelete}
                 >
-                  Delete
+                  Yes, Delete habit
                 </button>
               </div>
             </Dialog.Panel>
