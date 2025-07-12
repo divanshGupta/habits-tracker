@@ -1,4 +1,4 @@
-// src/components/Menu/DropdownMenu.jsx
+import { CiMenuKebab } from "react-icons/ci";
 import { useRef, useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { deleteHabit } from '../../Features/habitsSlice';
@@ -36,7 +36,7 @@ export default function DropdownMenu({ habit }) {
         onClick={() => setOpen(!open)}
         className="text-gray-500 hover:bg-gray-100 p-1 rounded-full"
       >
-        ⋮
+        <CiMenuKebab />
       </button>
 
       {open && (

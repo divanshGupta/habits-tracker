@@ -26,13 +26,13 @@ const uiSlice = createSlice({
     },
     closeEditModal: (state, action) => {
       state.isEditHabitModalOpen = false;
-      state.editHabitId = action.payload;
+      // state.editHabitId = action.payload;
     },
     openDeleteModal: (state, action) => {
       state.isDeleteModalOpen = true;
       state.habitIdToDelete = action.payload;
     },
-    closeDeleteModal: (state) => {
+    closeDeleteModal: (state, action) => {
       state.isDeleteModalOpen = false;
       state.habitIdToDelete = null;
     },

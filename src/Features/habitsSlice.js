@@ -47,9 +47,23 @@ const habitsSlice = createSlice({
       if (habit) {
         if (!habit.records) habit.records = {};
         habit.records[date] = "skipped";
-        
       }
     },
+
+    setHabitStatus: (state, action) => {
+      const { id, date, status } = action.payload; // status = "done" | null
+      const habit = state.find(h => h.id === id);
+      if (!habit) return;
+
+      if (!habit.records) habit.records = {};
+
+      if (status === "done") {
+        habit.records[date] = "done";
+      } else if (status === null) {
+        delete habit.records[date];
+      }
+      saveHabits(toPlainHabits(state));
+    } 
   },
 });
 
@@ -60,6 +74,7 @@ export const {
   editHabit,
   markHabitDone,
   markHabitSkipped,
+  setHabitStatus,
 } = habitsSlice.actions;
 
 export default habitsSlice.reducer;

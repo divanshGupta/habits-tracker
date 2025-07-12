@@ -63,7 +63,8 @@ function App() {
     <div className="w-full md:flex flex-col gap-10">
       {/* header for mobile */}
       <MobileHeader
-        today={todayLong}
+        month={currentMonth}
+        day={currentDay}
       />
       <AddHabitModal />
 
